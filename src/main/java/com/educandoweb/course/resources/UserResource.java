@@ -2,7 +2,11 @@ package com.educandoweb.course.resources;
 
 import com.educandoweb.course.entities.User;
 import com.educandoweb.course.services.UserService;
+import com.educandoweb.course.services.exceptions.DatabaseException;
+import com.educandoweb.course.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,7 +46,13 @@ public class UserResource {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.delete(id);
+        try {
+            userService.delete(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
         return ResponseEntity.noContent().build();
     }
 
