@@ -40,7 +40,7 @@ public class UserService {
             return userRepository.save(entity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
-        } 
+        }
     }
 
     private void updateData(User entity, User obj) {
